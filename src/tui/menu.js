@@ -28,6 +28,10 @@ const C = {
 
 const fg = (color, text) => `{${color}-fg}${text}{/${color}-fg}`;
 
+// Set by createMenu so prompt() can pause the main input handler without
+// needing the tui passed through all 17 call sites.
+let _tui = null;
+
 /**
  * Show a modal list menu. Returns selected index (or -1 if cancelled).
  * @param {string} title
@@ -38,6 +42,9 @@ const fg = (color, text) => `{${color}-fg}${text}{/${color}-fg}`;
 async function createMenu(title, items, tui, screen) {
   return new Promise((resolve) => {
     let selected = 0;
+    // Stop the main input handler from swallowing keystrokes while we're open.
+    if (tui) _tui = tui;
+    if (tui && tui.enterMenuMode) tui.enterMenuMode();
     const W = Math.min((screen ? screen.width : 80) - 8, 54);
     const H = Math.min(items.length + 4, 14);
 
@@ -74,6 +81,7 @@ async function createMenu(title, items, tui, screen) {
       screen.unkey(['enter', ' '], onEnter);
       screen.removeListener('keypress', onKey);
       box.detach();
+      if (tui && tui.exitMenuMode) tui.exitMenuMode();
       screen.render();
       resolve(result);
     }
@@ -133,6 +141,7 @@ async function createMenu(title, items, tui, screen) {
 async function prompt(question, defaultVal, screen) {
   return new Promise((resolve) => {
     let buf = defaultVal || '';
+    if (_tui && _tui.enterMenuMode) _tui.enterMenuMode();
     const W = Math.min((screen ? screen.width : 80) - 8, 60);
 
     const box = blessed.box({
@@ -162,6 +171,7 @@ async function prompt(question, defaultVal, screen) {
       screen.unkey(['enter'], onEnter);
       screen.removeListener('keypress', onKey);
       box.detach();
+      if (_tui && _tui.exitMenuMode) _tui.exitMenuMode();
       screen.render();
       resolve(result);
     }

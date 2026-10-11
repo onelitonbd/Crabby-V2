@@ -280,10 +280,11 @@ class TUI {
     // Command palette (Ctrl+P) — fuzzy picker, surfaced in the footer.
     s.key(['C-p'], () => {
       if (commandPalette.active) return;
+      this._menuMode = true;   // palette owns the keyboard until it closes
       commandPalette.open(s, (label) => {
         // Treat palette selection like normal input so /commands dispatch.
         if (this.onInput) this.onInput(label);
-      }, () => { this._refreshInput(); s.render(); });
+      }, () => { this._menuMode = false; this._inputBuf = ''; this._refreshInput(); s.render(); });
     });
 
     // Status side panel toggle (Ctrl+S)
