@@ -70,20 +70,37 @@ npm install -q --no-audit --no-fund 2>/dev/null || {
 echo -e "      ${GRN}✓${RST}"
 
 echo -e "${GRN}[5/5]${RST} Setting up crabby command..."
-mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.crabby"
 
-cp "$CRABBY/bin/crabby" "$HOME/.local/bin/crabby"
-chmod +x "$HOME/.local/bin/crabby"
+# In Termux, $PREFIX/bin is always on PATH — no rc-file editing needed.
+if [ -n "$PREFIX" ] && [ -d "$PREFIX/bin" ]; then
+  BIN_DIR="$PREFIX/bin"
+else
+  BIN_DIR="$HOME/.local/bin"
+fi
+mkdir -p "$BIN_DIR"
 
-for RC in "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.zshrc" "$HOME/.profile"; do
-  if [ -f "$RC" ] && ! grep -q '\.local/bin' "$RC" 2>/dev/null; then
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC"
-  fi
-done
-export PATH="$HOME/.local/bin:$PATH"
+# Symlink rather than copy, so `cd ~/crabby && git pull` updates the command too.
+chmod +x "$CRABBY/bin/crabby"
+ln -sf "$CRABBY/bin/crabby" "$BIN_DIR/crabby"
 
-echo -e "      ${GRN}✓${RST}"
+NEEDS_PATH=""
+case ":$PATH:" in
+  *":$BIN_DIR:"*) ;;
+  *)
+    # Only reached outside Termux. Create ~/.bashrc if nothing exists to carry it.
+    [ -f "$HOME/.bashrc" ] || echo '# added by crabby install.sh' > "$HOME/.bashrc"
+    for RC in "$HOME/.bashrc" "$HOME/.profile" "$HOME/.zshrc"; do
+      [ -f "$RC" ] || continue
+      grep -q "\.local/bin" "$RC" 2>/dev/null && continue
+      echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC"
+    done
+    export PATH="$BIN_DIR:$PATH"
+    NEEDS_PATH=1
+    ;;
+esac
+
+echo -e "      ${GRN}✓${RST} ${DIM}$BIN_DIR/crabby${RST}"
 
 echo ""
 echo -e "  ${BLD}Done.${RST}"
@@ -97,5 +114,10 @@ echo -e "  ${DIM}For full features:${RST}"
 echo -e "  ${DIM}· Termux:API — f-droid.org/en/packages/com.termux.api/${RST}"
 echo -e "  ${DIM}· CrabbyService — github.com/onelitonbd/Crabby-V2/releases${RST}"
 echo ""
+if [ -n "$NEEDS_PATH" ]; then
+  echo -e "  ${YLW}$BIN_DIR was not on your PATH.${RST}"
+  echo -e "  ${DIM}Run this first:${RST} ${BLD}source ~/.bashrc${RST}"
+  echo ""
+fi
 echo -e "  ${TEL}Type 'crabby' to begin.${RST}"
 echo ""
