@@ -31,11 +31,30 @@ pkg update -y -q 2>/dev/null || true
 echo -e "      ${GRN}✓${RST}"
 
 echo -e "${GRN}[2/5]${RST} Installing dependencies..."
-pkg install -y -q nodejs git curl 2>/dev/null || {
-  echo -e "${RED}  ✕ Failed to install dependencies.${RST}"
-  echo -e "${DIM}  Try: pkg install nodejs git curl${RST}"
+# Only install what's actually missing. Asking for `nodejs` unconditionally
+# rips out nodejs-lts and replaces it with the current release — which this
+# project's 2015-era blessed TUI has not been tested against.
+PKGS=""
+command -v git  >/dev/null 2>&1 || PKGS="$PKGS git"
+command -v curl >/dev/null 2>&1 || PKGS="$PKGS curl"
+command -v node >/dev/null 2>&1 || PKGS="$PKGS nodejs"
+command -v npm  >/dev/null 2>&1 || PKGS="$PKGS npm"
+
+if [ -n "$PKGS" ]; then
+  pkg install -y -q $PKGS 2>/dev/null || {
+    echo -e "${RED}  ✕ Failed to install dependencies.${RST}"
+    echo -e "${DIM}  Try: pkg install$PKGS${RST}"
+    exit 1
+  }
+else
+  echo -e "      ${DIM}already present${RST}"
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo -e "${RED}  ✕ node is still not available.${RST}"
+  echo -e "${DIM}  Try: pkg install nodejs-lts${RST}"
   exit 1
-}
+fi
 echo -e "      ${GRN}✓${RST} nodejs $(node --version)"
 
 echo -e "${GRN}[3/5]${RST} Getting Crabby..."
