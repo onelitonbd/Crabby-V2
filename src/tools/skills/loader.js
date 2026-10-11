@@ -5,7 +5,7 @@ const os       = require('os');
 const registry = require('../registry');
 
 const SKILLS_DIR = path.join(__dirname);
-const USER_SKILLS_DIR = path.join(os.homedir(), '.droidclaw', 'skills');
+const USER_SKILLS_DIR = path.join(os.homedir(), '.crabby', 'skills');
 
 // ensure user skills dir exists
 if (!fs.existsSync(USER_SKILLS_DIR)) {
@@ -38,7 +38,7 @@ function loadAll() {
     if (loadSkill(path.join(SKILLS_DIR, file))) loaded++;
   }
 
-  // load user skills from ~/.droidclaw/skills/
+  // load user skills from ~/.crabby/skills/
   if (fs.existsSync(USER_SKILLS_DIR)) {
     const userFiles = fs.readdirSync(USER_SKILLS_DIR).filter(f => f.endsWith('.js'));
     for (const file of userFiles) {

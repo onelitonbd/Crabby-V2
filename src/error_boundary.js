@@ -23,8 +23,8 @@ const KNOWN_ERRORS = [
   },
   {
     match: /ECONNREFUSED.*7070/,
-    msg: 'KiraService is not running.',
-    fix: 'Open the KiraService app and enable the accessibility service in Android Settings → Accessibility.',
+    msg: 'CrabbyService is not running.',
+    fix: 'Open the CrabbyService app and enable the accessibility service in Android Settings → Accessibility.',
   },
   {
     match: /ECONNREFUSED|ENOTFOUND|ETIMEDOUT/,
@@ -44,12 +44,12 @@ const KNOWN_ERRORS = [
   {
     match: /Cannot find module/,
     msg: 'A required module is missing.',
-    fix: 'Try: cd ~/droidclaw && npm install',
+    fix: 'Try: cd ~/crabby && npm install',
   },
   {
     match: /out of memory|heap/i,
     msg: 'Out of memory.',
-    fix: 'Close other apps and try again. Kira needs at least 200MB free RAM.',
+    fix: 'Close other apps and try again. Crabby needs at least 200MB free RAM.',
   },
 ];
 
@@ -68,7 +68,7 @@ function friendlyError(err) {
   process.stdout.write(c.dim('  Technical details (for bug reports):') + '\n');
   process.stdout.write(c.dim(`  ${msg.split('\n')[0]}`) + '\n');
   process.stdout.write('\n');
-  process.stdout.write(c.dim('  Report issues: github.com/levilyf/droidclaw/issues') + '\n');
+  process.stdout.write(c.dim('  Report issues: github.com/onelitonbd/Crabby-V2/issues') + '\n');
   process.stdout.write('\n');
 }
 

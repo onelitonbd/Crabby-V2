@@ -14,7 +14,7 @@ class Engine {
   async chat(userMessage) {
     const cfg = config.load();
     if (!cfg.apiKey) throw new Error('no API key set. run /config');
-    const system = this.soul ? this.soul.buildSystemPrompt(userMessage) : 'You are Kira — an AI agent living on Android/Termux. Speak lowercase, be direct, use your tools.';
+    const system = this.soul ? this.soul.buildSystemPrompt(userMessage) : 'You are Crabby — an AI agent living on Android/Termux. Speak lowercase, be direct, use your tools.';
     this.history.push({ role: 'user', content: userMessage });
     if (this.history.length > 20) this.history = this.history.slice(-20);
     const emotionState = _readEmotion();
@@ -40,7 +40,7 @@ class Engine {
     const cfg = config.load();
     if (!cfg.apiKey) { onDone(''); return null; }
 
-    const system     = this.soul ? this.soul.buildSystemPrompt(userMessage) : 'You are Kira.';
+    const system     = this.soul ? this.soul.buildSystemPrompt(userMessage) : 'You are Crabby.';
     this.history.push({ role: 'user', content: userMessage });
     if (this.history.length > 20) this.history = this.history.slice(-20);
 
@@ -237,7 +237,7 @@ class Engine {
   getHistory() {
     return this.history
       .filter(m => m.role === 'user' || m.role === 'assistant')
-      .map(m => `${m.role === 'user' ? 'you' : 'droidclaw'}: ${m.content}`)
+      .map(m => `${m.role === 'user' ? 'you' : 'crabby'}: ${m.content}`)
       .join('\n');
   }
 

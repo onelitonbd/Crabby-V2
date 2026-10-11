@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Task Tools — Kira manages her own tasks via conversation
+ * Task Tools — Crabby manages her own tasks via conversation
  */
 
 const registry   = require('./registry');

@@ -4,7 +4,7 @@ const path = require('path');
 const os   = require('os');
 
 const tools    = {};
-const LOG_FILE = path.join(os.homedir(), '.droidclaw', 'tool_log.json');
+const LOG_FILE = path.join(os.homedir(), '.crabby', 'tool_log.json');
 
 function register(name, fn, description) {
   tools[name] = { fn, description: description || '' };
@@ -30,7 +30,7 @@ function listWithDescriptions() {
 
 function _log(entry) {
   try {
-    const dir = path.join(os.homedir(), '.droidclaw');
+    const dir = path.join(os.homedir(), '.crabby');
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     let log = [];
     if (fs.existsSync(LOG_FILE)) { try { log = JSON.parse(fs.readFileSync(LOG_FILE, 'utf8')); } catch {} }

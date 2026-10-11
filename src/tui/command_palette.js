@@ -8,9 +8,9 @@
 const blessed = require('blessed');
 
 const C = {
-  kira:      '#5de4c7',
-  kiraBright:'#9efce7',
-  kiraDim:   '#1f6e5a',
+  crabby:      '#5de4c7',
+  crabbyBright:'#9efce7',
+  crabbyDim:   '#1f6e5a',
   border:    '#1a2e2a',
   panelBg:   '#0b1e19',
   selected:  '#0f2520',
@@ -24,7 +24,7 @@ const C = {
 
 const COMMANDS = [
   { label: '/help',        desc: 'commands & settings' },
-  { label: '/config',      desc: 'configure kira' },
+  { label: '/config',      desc: 'configure crabby' },
   { label: '/status',      desc: 'system status' },
   { label: '/skills',      desc: 'list skills' },
   { label: '/memory',      desc: 'view memory' },
@@ -84,7 +84,7 @@ class CommandPalette {
       tags:   true,
       border: { type: 'line' },
       style: {
-        border: { fg: C.kiraDim, bg: C.panelBg },
+        border: { fg: C.crabbyDim, bg: C.panelBg },
         bg: C.panelBg,
       },
       shadow: false,
@@ -161,12 +161,12 @@ class CommandPalette {
     const lines  = [];
 
     // Title + search
-    lines.push(fg(C.kiraDim, '⌘ command') + ' ' + fg(C.muted, '─'.repeat(Math.max(0, boxW - 12))));
+    lines.push(fg(C.crabbyDim, '⌘ command') + ' ' + fg(C.muted, '─'.repeat(Math.max(0, boxW - 12))));
     lines.push('');
 
-    const cur    = fg(C.user, this.filter) + (this.filter ? '' : fg(C.hint, 'search…')) + fg(C.kira, '▌');
+    const cur    = fg(C.user, this.filter) + (this.filter ? '' : fg(C.hint, 'search…')) + fg(C.crabby, '▌');
     lines.push(cur);
-    lines.push(fg(C.kiraDim, '─'.repeat(boxW)));
+    lines.push(fg(C.crabbyDim, '─'.repeat(boxW)));
 
     // Results
     const visible = cmds.slice(top, top + maxH);
@@ -175,14 +175,14 @@ class CommandPalette {
       const idx   = top + i;
       const cmd   = visible[i];
       const isSel = idx === this.selected;
-      const icon  = isSel ? fg(C.kira, '❯ ') : '  ';
-      const label = isSel ? fg(C.kiraBright, cmd.label.padEnd(16)) : fg(C.labelDim, cmd.label.padEnd(16));
+      const icon  = isSel ? fg(C.crabby, '❯ ') : '  ';
+      const label = isSel ? fg(C.crabbyBright, cmd.label.padEnd(16)) : fg(C.labelDim, cmd.label.padEnd(16));
       const desc  = isSel ? fg(C.desc, cmd.desc) : fg(C.hint, cmd.desc);
       lines.push(icon + label + '  ' + desc);
     }
 
     // Footer
-    lines.push(fg(C.kiraDim, '─'.repeat(boxW)));
+    lines.push(fg(C.crabbyDim, '─'.repeat(boxW)));
     lines.push(
       fg(C.user, '↑↓') + fg(C.hint, ' navigate  ') +
       fg(C.user, '↵')  + fg(C.hint, ' select  ') +

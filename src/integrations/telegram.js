@@ -65,7 +65,7 @@ class Telegram {
 
     // Handle /start
     if (text === '/start') {
-      await this._req('sendMessage', { chat_id: chatId, text: `droidclaw connected. what do you need, ${who.toLowerCase()}?` });
+      await this._req('sendMessage', { chat_id: chatId, text: `crabby connected. what do you need, ${who.toLowerCase()}?` });
       return;
     }
 

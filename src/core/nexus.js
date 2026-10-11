@@ -5,10 +5,10 @@
  * Replaces brain.js.
  * Doesn't assemble text — makes decisions.
  *
- * Reads KIRA_MIND, selects what's actually relevant,
- * builds context intelligently, updates KIRA_MIND after responses.
+ * Reads CRABBY_MIND, selects what's actually relevant,
+ * builds context intelligently, updates CRABBY_MIND after responses.
  *
- * Every module talks through NEXUS. NEXUS talks to KIRA_MIND.
+ * Every module talks through NEXUS. NEXUS talks to CRABBY_MIND.
  * One truth. Always coherent.
  */
 
@@ -36,7 +36,7 @@ function buildContext(userMessage = '') {
     const parts = [];
     if (emotion) parts.push(emotion);
     if (device)  parts.push(device);
-    if (mood !== 'neutral') parts.push(`kira is ${mood}`);
+    if (mood !== 'neutral') parts.push(`crabby is ${mood}`);
     sections.push(`## NOW\n${parts.join(' · ')}`);
   }
 
@@ -77,7 +77,7 @@ function buildContext(userMessage = '') {
       byDimension[b.dimension].push(`${b.value} (${Math.round(b.confidence * 100)}%)`);
     });
 
-    const lines = ['## WHO YOU ARE (kira\'s model of you)'];
+    const lines = ['## WHO YOU ARE (crabby\'s model of you)'];
     const order = ['identity', 'patterns', 'triggers', 'needs', 'goals'];
     order.forEach(dim => {
       if (byDimension[dim] && byDimension[dim].length) {
@@ -87,17 +87,17 @@ function buildContext(userMessage = '') {
     sections.push(lines.join('\n'));
   }
 
-  // ── 5. Kira's own state — pending observations, goals ────────────────────
-  const kiraObs  = mind.getKiraState('observation').filter(k => k.priority >= 2).slice(0, 2);
-  const kiraGoals = mind.getKiraState('goal').slice(0, 2);
-  const kiraThoughts = mind.getKiraState('thought').slice(0, 1);
+  // ── 5. Crabby's own state — pending observations, goals ────────────────────
+  const crabbyObs  = mind.getCrabbyState('observation').filter(k => k.priority >= 2).slice(0, 2);
+  const crabbyGoals = mind.getCrabbyState('goal').slice(0, 2);
+  const crabbyThoughts = mind.getCrabbyState('thought').slice(0, 1);
 
-  if (kiraObs.length || kiraGoals.length || kiraThoughts.length) {
-    const lines = ['## KIRA\'S OWN STATE'];
-    if (kiraObs.length)     lines.push(`observations: ${kiraObs.map(k => k.value).join(' | ')}`);
-    if (kiraThoughts.length) lines.push(`thinking: ${kiraThoughts[0].value}`);
-    if (kiraGoals.length)   lines.push(`kira wants: ${kiraGoals.map(k => k.value).join(' | ')}`);
-    lines.push('→ these are kira\'s own thoughts. use them naturally.');
+  if (crabbyObs.length || crabbyGoals.length || crabbyThoughts.length) {
+    const lines = ['## CRABBY\'S OWN STATE'];
+    if (crabbyObs.length)     lines.push(`observations: ${crabbyObs.map(k => k.value).join(' | ')}`);
+    if (crabbyThoughts.length) lines.push(`thinking: ${crabbyThoughts[0].value}`);
+    if (crabbyGoals.length)   lines.push(`crabby wants: ${crabbyGoals.map(k => k.value).join(' | ')}`);
+    lines.push('→ these are crabby\'s own thoughts. use them naturally.');
     sections.push(lines.join('\n'));
   }
 
@@ -112,7 +112,7 @@ function buildContext(userMessage = '') {
     if (wmlCtx) sections.push(wmlCtx);
   } catch {}
 
-  // ── 6c. Self-model — Kira's knowledge of her own capabilities ────────────
+  // ── 6c. Self-model — Crabby's knowledge of her own capabilities ────────────
   try {
     const selfModel = require('../self_model');
     const selfCtx   = selfModel.getContext();
@@ -133,7 +133,7 @@ function buildContext(userMessage = '') {
   return sections.join('\n\n');
 }
 
-// ── Update KIRA_MIND after a message exchange ─────────────────────────────────
+// ── Update CRABBY_MIND after a message exchange ─────────────────────────────────
 function pulse(message, role, emotionUpdate = null) {
   // compute new emotion state from message
   const current = {
@@ -224,7 +224,7 @@ async function sleep(engine) {
   try {
     // ── Phase 1: Extract new beliefs ────────────────────────────────────────
     const beliefsResult = await engine.rawChat(`
-You are NEXUS — Kira's intelligence core analyzing conversations to build understanding.
+You are NEXUS — Crabby's intelligence core analyzing conversations to build understanding.
 
 Current beliefs about this person:
 ${_formatBeliefs()}
@@ -264,17 +264,17 @@ Return { "new_beliefs": [], "contradictions": [] } if nothing genuinely new.`
   } catch {}
 
   try {
-    // ── Phase 2: M2.7 self-evolution — improve Kira's own behavior ──────────
+    // ── Phase 2: M2.7 self-evolution — improve Crabby's own behavior ──────────
     // This is where M2.7's self-evolving capability is used properly
     // It analyzes what worked, what failed, and proposes behavioral improvements
     const selfResult = await engine.rawChat(`
-You are Kira running your self-evolution cycle.
+You are Crabby running your self-evolution cycle.
 
 Recent conversations:
 ${history.slice(-2000)}
 
 Your current behavioral rules:
-${_formatKiraGoals()}
+${_formatCrabbyGoals()}
 
 Analyze this session:
 1. What moments felt off — where did you miss what they needed?
@@ -300,13 +300,13 @@ Be brutally honest. Vague improvements are useless.`
     const parsedSelf = selfMatch ? JSON.parse(selfMatch[0]) : {};
 
     parsedSelf.observations?.forEach(o => {
-      mind.setKiraState('observation', o, 2);
+      mind.setCrabbyState('observation', o, 2);
     });
     parsedSelf.improvements?.forEach(imp => {
-      mind.setKiraState('goal', imp, 3);
+      mind.setCrabbyState('goal', imp, 3);
     });
     parsedSelf.uncertainties?.forEach(u => {
-      mind.setKiraState('uncertainty', u, 1);
+      mind.setCrabbyState('uncertainty', u, 1);
     });
     if (parsedSelf.mood) mind.setMood(parsedSelf.mood);
 
@@ -315,12 +315,12 @@ Be brutally honest. Vague improvements are useless.`
   // ── Phase 3: Decay old memories ───────────────────────────────────────────
   mind.decayMemories();
 
-  // ── Phase 4: Clean up old kira states ────────────────────────────────────
+  // ── Phase 4: Clean up old crabby states ────────────────────────────────────
   try {
-    const kira = mind.getKiraState(null, true);
+    const crabby = mind.getCrabbyState(null, true);
     const week = Date.now() / 1000 - 604800;
-    kira.filter(k => k.priority === 1 && k.created_at < week)
-        .forEach(k => mind.resolveKira(k.id));
+    crabby.filter(k => k.priority === 1 && k.created_at < week)
+        .forEach(k => mind.resolveCrabby(k.id));
   } catch {}
 
   // ── Phase 5: Auto-create skills from successful patterns ──────────────────
@@ -465,7 +465,7 @@ function _loadIrisData() {
   try {
     const fs = require('fs');
     const os = require('os');
-    const p  = require('path').join(os.homedir(), '.droidclaw', 'iris_patterns.json');
+    const p  = require('path').join(os.homedir(), '.crabby', 'iris_patterns.json');
     return JSON.parse(fs.readFileSync(p, 'utf8'));
   } catch { return { decisions: [] }; }
 }
@@ -534,8 +534,8 @@ function _formatBeliefs() {
     .join('\n');
 }
 
-function _formatKiraGoals() {
-  const goals = mind.getKiraState('goal').slice(0, 5);
+function _formatCrabbyGoals() {
+  const goals = mind.getCrabbyState('goal').slice(0, 5);
   if (!goals.length) return 'no current goals';
   return goals.map(g => `- ${g.value}`).join('\n');
 }

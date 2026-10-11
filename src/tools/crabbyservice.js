@@ -1,6 +1,6 @@
 'use strict';
 /**
- * KiraService v2 — full phone control via Accessibility Service
+ * CrabbyService v2 — full phone control via Accessibility Service
  * Endpoints: 22 tools covering screen, audio, sensors, system, apps
  */
 const { execSync } = require('child_process');
@@ -19,7 +19,7 @@ function call(method, endpoint, body = null) {
 }
 
 function fmt(result, fallback) {
-  if (!result) return fallback || 'failed — KiraService may not be running';
+  if (!result) return fallback || 'failed — CrabbyService may not be running';
   return typeof result === 'string' ? result : JSON.stringify(result, null, 2);
 }
 

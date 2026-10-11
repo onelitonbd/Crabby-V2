@@ -1,6 +1,6 @@
 'use strict';
 /**
- * TASK ENGINE — Kira's Autonomous Task System
+ * TASK ENGINE — Crabby's Autonomous Task System
  *
  * Not a cron job. A goal-oriented execution engine.
  *
@@ -16,7 +16,7 @@ const fs   = require('fs');
 const os   = require('os');
 const path = require('path');
 
-const TASKS_FILE = path.join(os.homedir(), '.droidclaw', 'tasks.json');
+const TASKS_FILE = path.join(os.homedir(), '.crabby', 'tasks.json');
 
 // ── Storage ───────────────────────────────────────────────────────────────────
 function loadTasks() {
@@ -62,7 +62,7 @@ async function createTask(goal, scheduleText, engine) {
 async function _planSteps(goal, engine) {
   try {
     const result = await engine.rawChat(`
-You are Kira's task planner. Break this goal into executable steps.
+You are Crabby's task planner. Break this goal into executable steps.
 
 Goal: ${goal}
 
@@ -191,7 +191,7 @@ async function summarizeResult(task, executionResult, engine) {
 
   try {
     const result = await engine.rawChat(`
-You are Kira. Summarize this task result in 2-3 sentences max.
+You are Crabby. Summarize this task result in 2-3 sentences max.
 Be direct. Only include what matters. Skip filler.
 
 Task goal: ${task.goal}

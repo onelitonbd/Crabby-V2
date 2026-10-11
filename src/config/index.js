@@ -3,7 +3,7 @@ const fs   = require('fs');
 const path = require('path');
 const os   = require('os');
 
-const CONFIG_DIR  = path.join(os.homedir(), '.droidclaw');
+const CONFIG_DIR  = path.join(os.homedir(), '.crabby');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 
 const DEFAULTS = {
@@ -20,7 +20,23 @@ const DEFAULTS = {
 
 let _cache = null;
 
+// The project was renamed from "droidclaw" to "crabby". Existing installs keep
+// their state under ~/.droidclaw — move it across once, on first load.
+const LEGACY_DIR = path.join(os.homedir(), '.droidclaw');
+
+function migrateLegacyDir() {
+  try {
+    if (fs.existsSync(CONFIG_DIR)) return;
+    if (!fs.existsSync(LEGACY_DIR)) return;
+    fs.renameSync(LEGACY_DIR, CONFIG_DIR);
+  } catch {
+    // best effort — a cross-device rename or a permissions error just means
+    // we start fresh rather than crash on boot.
+  }
+}
+
 function ensure() {
+  migrateLegacyDir();
   if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true });
 }
 

@@ -6,8 +6,8 @@ const os       = require('os');
 const https    = require('https');
 
 const CONFIG_DIR   = path.join(os.homedir(), '.config');
-const CREDS_FILE   = path.join(CONFIG_DIR, 'kira-google-credentials.json');
-const TOKEN_FILE   = path.join(CONFIG_DIR, 'kira-google-token.json');
+const CREDS_FILE   = path.join(CONFIG_DIR, 'crabby-google-credentials.json');
+const TOKEN_FILE   = path.join(CONFIG_DIR, 'crabby-google-token.json');
 
 // ─── HTTP helpers ─────────────────────────────────────────────────────────────
 
@@ -71,7 +71,7 @@ async function refreshAccessToken(creds, token) {
 
 async function getValidToken() {
   const creds = loadCreds();
-  if (!creds) throw new Error('no credentials file. save to ~/.config/kira-google-credentials.json');
+  if (!creds) throw new Error('no credentials file. save to ~/.config/crabby-google-credentials.json');
 
   let token = loadToken();
   if (!token) throw new Error('not authenticated. use google_auth to authenticate first.');
@@ -100,7 +100,7 @@ async function apiRequest(method, hostname, path, token, body) {
 registry.register('google_auth', async function(args) {
   const code = args.code;
   const creds = loadCreds();
-  if (!creds) return 'error: credentials file missing at ~/.config/kira-google-credentials.json';
+  if (!creds) return 'error: credentials file missing at ~/.config/crabby-google-credentials.json';
 
   if (!code) {
     const scopes = [
@@ -139,10 +139,10 @@ registry.register('google_auth', async function(args) {
   if (res.body.access_token) {
     res.body.expiry_date = Date.now() + (res.body.expires_in * 1000);
     saveToken(res.body);
-    return 'authenticated. token saved to ~/.config/kira-google-token.json. google tools are now live.';
+    return 'authenticated. token saved to ~/.config/crabby-google-token.json. google tools are now live.';
   }
   return 'auth failed: ' + JSON.stringify(res.body);
-}, 'authenticate kira with her google account. call with no args to get the auth URL, then call again with the code.');
+}, 'authenticate crabby with her google account. call with no args to get the auth URL, then call again with the code.');
 
 // ─── Gmail tools ─────────────────────────────────────────────────────────────
 
@@ -167,7 +167,7 @@ registry.register('gmail_list', async function(args) {
   }));
 
   return details.join('\n---\n');
-}, 'list recent emails in kira\'s gmail inbox');
+}, 'list recent emails in crabby\'s gmail inbox');
 
 registry.register('gmail_send', async function(args) {
   if (!args.to || !args.subject || !args.body) return 'error: to, subject, and body required';
@@ -186,7 +186,7 @@ registry.register('gmail_send', async function(args) {
 
   if (res.body.id) return 'email sent. message id: ' + res.body.id;
   return 'send failed: ' + JSON.stringify(res.body);
-}, 'send an email from kira\'s gmail account');
+}, 'send an email from crabby\'s gmail account');
 
 // ─── Drive tools ─────────────────────────────────────────────────────────────
 
@@ -195,7 +195,7 @@ registry.register('drive_save', async function(args) {
   const token = await getValidToken();
 
   const metadata = { name: args.filename, mimeType: 'text/plain' };
-  const boundary = 'kira_boundary';
+  const boundary = 'crabby_boundary';
   const body = [
     '--' + boundary,
     'Content-Type: application/json; charset=UTF-8',
@@ -220,7 +220,7 @@ registry.register('drive_save', async function(args) {
 
   if (res.body.id) return 'saved to drive: ' + args.filename + ' (id: ' + res.body.id + ')';
   return 'save failed: ' + JSON.stringify(res.body);
-}, 'save a file to kira\'s google drive');
+}, 'save a file to crabby\'s google drive');
 
 registry.register('drive_list', async function(args) {
   const token = await getValidToken();
@@ -231,7 +231,7 @@ registry.register('drive_list', async function(args) {
 
   if (!res.body.files || !res.body.files.length) return 'drive is empty.';
   return res.body.files.map(f => f.name + ' (modified: ' + new Date(f.modifiedTime).toLocaleDateString() + ')').join('\n');
-}, 'list files in kira\'s google drive');
+}, 'list files in crabby\'s google drive');
 
 // ─── Calendar tools ──────────────────────────────────────────────────────────
 
@@ -248,22 +248,23 @@ registry.register('calendar_list', async function(args) {
     const start = e.start.dateTime || e.start.date;
     return new Date(start).toLocaleString() + ' — ' + e.summary;
   }).join('\n');
-}, 'list upcoming calendar events from kira\'s google calendar');
+}, 'list upcoming calendar events from crabby\'s google calendar');
 
 registry.register('calendar_add', async function(args) {
   if (!args.title || !args.date) return 'error: title and date required';
   const token = await getValidToken();
 
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const event = {
     summary: args.title,
-    start:   { dateTime: new Date(args.date).toISOString(), timeZone: 'Asia/Kolkata' },
-    end:     { dateTime: new Date(new Date(args.date).getTime() + 3600000).toISOString(), timeZone: 'Asia/Kolkata' },
+    start:   { dateTime: new Date(args.date).toISOString(), timeZone: tz },
+    end:     { dateTime: new Date(new Date(args.date).getTime() + 3600000).toISOString(), timeZone: tz },
   };
   if (args.description) event.description = args.description;
 
   const res = await apiRequest('POST', 'www.googleapis.com', '/calendar/v3/calendars/primary/events', token, event);
   if (res.body.id) return 'event added: ' + args.title + ' on ' + new Date(args.date).toLocaleString();
   return 'failed: ' + JSON.stringify(res.body);
-}, 'add an event to kira\'s google calendar');
+}, 'add an event to crabby\'s google calendar');
 
 module.exports = {};

@@ -1,7 +1,7 @@
 'use strict';
 /**
  * Setup wizard — runs on first launch
- * Guides any stranger through getting Kira working
+ * Guides any stranger through getting Crabby working
  * No assumptions. No jargon. Just clear steps.
  */
 
@@ -74,7 +74,7 @@ function checkTermuxApi() {
   } catch { return false; }
 }
 
-function checkKiraService() {
+function checkCrabbyService() {
   try {
     const result = spawnSync('curl', ['-s', '-m', '3', 'http://localhost:7070/health'], { encoding: 'utf8', timeout: 4000 });
     if (result.error || result.status !== 0) return false;
@@ -121,7 +121,7 @@ async function run() {
   console.clear();
 
   print(c.teal('  ╭─────────────────────────────────╮'));
-  print(c.teal('  │  ◈  K I R A  —  Setup          │'));
+  print(c.teal('  │  ◈  C R A B B Y  —  Setup       │'));
   print(c.teal('  ╰─────────────────────────────────╯'));
   gap();
   print(c.dim('  Let\'s get you set up. This takes about 2 minutes.'));
@@ -139,7 +139,7 @@ async function run() {
   // ── Step 2: API setup ─────────────────────────────────────────────────────
   print(c.bold('  Step 2 of 4 — AI Model'));
   gap();
-  print('  Kira works with any OpenAI-compatible API.');
+  print('  Crabby works with any OpenAI-compatible API.');
   print('  The easiest free option: NVIDIA NIM (no credit card needed)');
   print(c.dim('  → Sign up at: integrate.api.nvidia.com'));
   gap();
@@ -203,26 +203,26 @@ async function run() {
   } else {
     print(c.amber('✗ not found'));
     print(c.dim('  Install from F-Droid: f-droid.org/en/packages/com.termux.api/'));
-    print(c.dim('  Kira works without it but has limited phone control.'));
+    print(c.dim('  Crabby works without it but has limited phone control.'));
     config.set('hasTermuxApi', false);
   }
 
-  process.stdout.write('  Checking KiraService... ');
-  const hasKiraService = checkKiraService();
-  if (hasKiraService) {
+  process.stdout.write('  Checking CrabbyService... ');
+  const hasCrabbyService = checkCrabbyService();
+  if (hasCrabbyService) {
     print(c.green('✓ running'));
   } else {
     print(c.amber('✗ not running'));
-    print(c.dim('  Download KiraService.apk from github.com/levilyf/droidclaw/releases'));
+    print(c.dim('  Download CrabbyService.apk from github.com/onelitonbd/Crabby-V2/releases'));
     print(c.dim('  Install it and enable the accessibility service in Android Settings.'));
-    print(c.dim('  Kira works without it but cannot read your screen or control apps.'));
+    print(c.dim('  Crabby works without it but cannot read your screen or control apps.'));
   }
   gap();
 
   // ── Step 4: Telegram (optional) ───────────────────────────────────────────
   print(c.bold('  Step 4 of 4 — Telegram (optional)'));
   gap();
-  print('  Telegram lets Kira message you proactively — when something matters,');
+  print('  Telegram lets Crabby message you proactively — when something matters,');
   print('  she reaches out without you opening the app.');
   gap();
 
@@ -289,7 +289,7 @@ async function run() {
   print(c.dim('  Commands: /config · /reload · /clear · /exit'));
   print(c.dim('  Ctrl+L to clear screen · ↑↓ for history'));
   gap();
-  print(c.teal('  Starting Kira...'));
+  print(c.teal('  Starting Crabby...'));
   gap();
 }
 

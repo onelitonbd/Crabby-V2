@@ -1,16 +1,16 @@
 'use strict';
 /**
- * KIRA TUI — app shell layout
+ * CRABBY TUI — app shell layout
  *
  * ┌─────────────────────────────────────────────────────────┐
- * │  ◈ KIRA  │  ◈ daemon  mood  42t  model         20:34  │  ← header (1 row, fixed)
+ * │  ◈ CRABBY  │  ◈ daemon  mood  42t  model         20:34  │  ← header (1 row, fixed)
  * ├─────────────────────────────────────────────────────────┤
  * │                                                         │
- * │   kira ❯ hey. (boot greeting)                          │  ← chat panel
+ * │   crabby ❯ hey. (boot greeting)                          │  ← chat panel
  * │                                                         │     scrollable
  * │   you  ❯ build me a script                             │     fills space
  * │                                                         │
- * │   kira ❯ sure. here's what I'll do…                    │
+ * │   crabby ❯ sure. here's what I'll do…                    │
  * │                                                         │
  * ├─────────────────────────────────────────────────────────┤
  * │  you ❯ █                                               │  ← input row (1 row, fixed)
@@ -28,9 +28,9 @@ const commandPalette = require('./command_palette');
 // blessed uses {color-fg} tags. We reference named hex colors via chalk for
 // non-blessed output; inside blessed boxes we use blessed tag syntax directly.
 const C = {
-  kira:       '#5de4c7',
-  kiraBright: '#9efce7',
-  kiraDim:    '#1f6e5a',
+  crabby:       '#5de4c7',
+  crabbyBright: '#9efce7',
+  crabbyDim:    '#1f6e5a',
   user:       '#e8b86d',
   userDim:    '#6b4f1e',
   border:     '#1a2e2a',
@@ -93,7 +93,7 @@ class TUI {
     this._screen = blessed.screen({
       smartCSR:    true,
       fullUnicode: true,
-      title:       'kira',
+      title:       'crabby',
       forceUnicode: true,
     });
 
@@ -134,7 +134,7 @@ class TUI {
       tags: true,
       scrollbar: {
         ch: ' ',
-        style: { bg: C.kiraDim },
+        style: { bg: C.crabbyDim },
         track: { style: { bg: C.panelBg } },
       },
       style: { bg: C.panelBg },
@@ -190,8 +190,8 @@ class TUI {
     let daemonGlyph = '◯', daemonCol = C.muted;
     try {
       const fs = require('fs'), os = require('os');
-      const pid = parseInt(fs.readFileSync(`${os.homedir()}/.droidclaw/daemon.pid`, 'utf8').trim());
-      if (pid && !isNaN(pid)) { process.kill(pid, 0); daemonGlyph = '◈'; daemonCol = C.kira; }
+      const pid = parseInt(fs.readFileSync(`${os.homedir()}/.crabby/daemon.pid`, 'utf8').trim());
+      if (pid && !isNaN(pid)) { process.kill(pid, 0); daemonGlyph = '◈'; daemonCol = C.crabby; }
     } catch {}
 
     let mood = '';
@@ -209,13 +209,13 @@ class TUI {
     const sep = fg(C.border, ' │ ');
 
     const left =
-      ` {bold}${fg(C.kiraBright, '◈ KIRA')}{/bold}` +
+      ` {bold}${fg(C.crabbyBright, '◈ CRABBY')}{/bold}` +
       sep +
       fg(daemonCol, daemonGlyph) +
       (mood  ? '  ' + fg(C.sys, mood)   : '') +
       '  ' + fg(C.muted, turns + 't') +
       '  ' + fg(C.sys, model) +
-      (tg   ? '  ' + fg(C.kira, 'tg')  : '');
+      (tg   ? '  ' + fg(C.crabby, 'tg')  : '');
 
     const right = fg(C.muted, time + ' ');
 
@@ -254,7 +254,7 @@ class TUI {
     if (!this._inputRow) return;
     if (this.thinking) {
       this._inputRow.setContent(
-        fg(C.kiraDim, SPIN[this._spinIdx % SPIN.length]) +
+        fg(C.crabbyDim, SPIN[this._spinIdx % SPIN.length]) +
         '  ' +
         fg(C.sys, this._thinkLabel + '…')
       );
@@ -264,9 +264,9 @@ class TUI {
     const name = (cfg.name || 'you').toLowerCase();
     this._inputRow.setContent(
       fg(C.userDim, name) +
-      ' ' + fg(C.kira, '❯') +
+      ' ' + fg(C.crabby, '❯') +
       ' ' + fg(C.user, this._inputBuf) +
-      fg(C.kira, '▌')
+      fg(C.crabby, '▌')
     );
   }
 
@@ -369,16 +369,16 @@ class TUI {
       const cfg  = require('../config').load();
       const name = (cfg.name || 'you').toLowerCase();
       this._chat.log('');
-      this._chat.log(fg(C.userDim, name) + ' ' + fg(C.kira, '❯') + ' ' + fg(C.user, payload));
+      this._chat.log(fg(C.userDim, name) + ' ' + fg(C.crabby, '❯') + ' ' + fg(C.user, payload));
 
-    } else if (type === 'kira') {
+    } else if (type === 'crabby') {
       const W2     = W;
       const rendered = stripAnsi(renderMd(payload, W2));
       this._chat.log('');
-      this._chat.log(fg(C.kiraDim, 'kira') + ' ' + fg(C.kira, '❯'));
+      this._chat.log(fg(C.crabbyDim, 'crabby') + ' ' + fg(C.crabby, '❯'));
       for (const line of rendered.split('\n')) {
         if (line.trim()) {
-          this._chat.log('  ' + fg(C.kiraBright, line));
+          this._chat.log('  ' + fg(C.crabbyBright, line));
         } else {
           this._chat.log('');
         }
@@ -398,8 +398,8 @@ class TUI {
 
     } else if (type === 'tool') {
       const { name: tName, preview, done } = payload;
-      const icon = done ? fg(C.kiraDim, '✓') : fg(C.kira, '⟳');
-      const col  = done ? C.muted : C.kira;
+      const icon = done ? fg(C.crabbyDim, '✓') : fg(C.crabby, '⟳');
+      const col  = done ? C.muted : C.crabby;
       this._chat.log(icon + ' ' + fg(col, tName.padEnd(14)) + ' ' + fg(C.sys, (preview || '').slice(0, W - 18)));
     }
 
@@ -413,9 +413,9 @@ class TUI {
     this._chat.log('');
     this._chat.log(fg(C.border, '  ╭──────────────────────────────────────╮'));
     await this._sleep(30);
-    this._chat.log(fg(C.border, '  │') + '  {bold}' + fg(C.kiraBright, '◈  K I R A') + '{/bold}' + '                    ' + fg(C.border, '│'));
+    this._chat.log(fg(C.border, '  │') + '  {bold}' + fg(C.crabbyBright, '◈  C R A B B Y') + '{/bold}' + '                ' + fg(C.border, '│'));
     await this._sleep(30);
-    this._chat.log(fg(C.border, '  │') + '     ' + fg(C.kiraDim, 'persistent · observing') + '       ' + fg(C.border, '│'));
+    this._chat.log(fg(C.border, '  │') + '     ' + fg(C.crabbyDim, 'persistent · observing') + '       ' + fg(C.border, '│'));
     await this._sleep(30);
     this._chat.log(fg(C.border, '  ╰──────────────────────────────────────╯'));
     this._chat.log('');
@@ -424,7 +424,7 @@ class TUI {
 
     const h = new Date().getHours();
     const greet = h < 5 ? 'still up.' : h < 12 ? 'morning.' : h < 17 ? 'hey.' : h < 21 ? 'evening.' : 'late.';
-    this._chat.log(fg(C.kiraDim, 'kira') + ' ' + fg(C.kira, '❯') + ' ' + fg(C.sys, greet));
+    this._chat.log(fg(C.crabbyDim, 'crabby') + ' ' + fg(C.crabby, '❯') + ' ' + fg(C.sys, greet));
     this._chat.log('');
     this._screen.render();
   }
@@ -440,7 +440,7 @@ class TUI {
       this._streamStarted = false;
       this._streamBuf     = '';
       this._pendingTools  = [];
-      this._chatAppend('kira', str);
+      this._chatAppend('crabby', str);
       this._refreshInput();
       this._refreshFooter();
       this._screen.render();
@@ -484,7 +484,7 @@ class TUI {
       this.thinking = false;
       this._streamBuf = '';
       this._chat.log('');
-      this._chat.log(fg(C.kiraDim, 'kira') + ' ' + fg(C.kira, '❯'));
+      this._chat.log(fg(C.crabbyDim, 'crabby') + ' ' + fg(C.crabby, '❯'));
       this._refreshInput();
     }
     this._streamBuf += token;
@@ -492,7 +492,7 @@ class TUI {
     const parts = this._streamBuf.split('\n');
     for (let i = 0; i < parts.length - 1; i++) {
       if (parts[i].trim()) {
-        this._chat.log('  ' + fg(C.kiraBright, stripAnsi(parts[i])));
+        this._chat.log('  ' + fg(C.crabbyBright, stripAnsi(parts[i])));
       } else {
         this._chat.log('');
       }
@@ -503,7 +503,7 @@ class TUI {
 
   finishStream() {
     if (this._streamBuf.trim()) {
-      this._chat.log('  ' + fg(C.kiraBright, stripAnsi(this._streamBuf)));
+      this._chat.log('  ' + fg(C.crabbyBright, stripAnsi(this._streamBuf)));
     }
     this._streamBuf     = '';
     this._streamStarted = false;
@@ -564,7 +564,7 @@ class TUI {
   }
 
   // ── Legacy stubs (index.js uses these internal fields) ───────────────────
-  _kiraPrompt() {} // no-op — blessed handles layout
+  _crabbyPrompt() {} // no-op — blessed handles layout
 
   // ── Helpers ──────────────────────────────────────────────────────────────
   _parseToolLabel(str) {

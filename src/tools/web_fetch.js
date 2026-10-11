@@ -1,7 +1,7 @@
 'use strict';
 /**
  * Web Fetch Tool
- * Lets Kira fetch any public URL and read its content.
+ * Lets Crabby fetch any public URL and read its content.
  * Uses curl — already available in Termux.
  */
 
@@ -197,7 +197,8 @@ registry.register('github_issues', async ({ repo, state }) => {
 }, 'get GitHub issues for a repo — state: open or closed');
 
 registry.register('weather', async ({ city }) => {
-  const location = city || 'Surat';
+  if (!city) return 'error: city required — e.g. weather {"city": "Lisbon"}';
+  const location = city;
   const result   = fetch(`https://wttr.in/${encodeURIComponent(location)}?format=3`, {
     maxBytes: 500,
     timeout:  8,

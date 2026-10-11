@@ -4,10 +4,10 @@ const fs       = require('fs');
 const path     = require('path');
 const os       = require('os');
 
-const BASE     = path.join(os.homedir(), 'droidclaw', 'src');
-const PENDING  = path.join(os.homedir(), '.droidclaw', 'pending_patch.json');
+const BASE     = path.join(os.homedir(), 'crabby', 'src');
+const PENDING  = path.join(os.homedir(), '.crabby', 'pending_patch.json');
 
-// Files Kira is allowed to propose changes to
+// Files Crabby is allowed to propose changes to
 const ALLOWED = [
   'tools/exec.js',
   'tools/memory.js',
@@ -81,7 +81,7 @@ registry.register('self_propose', async function(args) {
   const isSensitive = SENSITIVE.includes(file);
 
   // Save pending patch
-  const dir = path.join(os.homedir(), '.droidclaw');
+  const dir = path.join(os.homedir(), '.crabby');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
   fs.writeFileSync(PENDING, JSON.stringify({
@@ -106,7 +106,7 @@ registry.register('self_propose', async function(args) {
   out += 'type "apply patch" to apply or "reject patch" to discard.';
 
   return out;
-}, 'propose a code change to one of kira\'s own files — shows diff, waits for approval');
+}, 'propose a code change to one of crabby\'s own files — shows diff, waits for approval');
 
 registry.register('self_apply', async function() {
   if (!fs.existsSync(PENDING)) return 'no pending patch. use self_propose first.';
@@ -121,7 +121,7 @@ registry.register('self_apply', async function() {
   fs.writeFileSync(patch.fullPath, patch.proposed);
   fs.unlinkSync(PENDING);
 
-  return 'patch applied to ' + patch.file + '\nbackup saved at ' + backupPath + '\nrestart kira for changes to take effect.';
+  return 'patch applied to ' + patch.file + '\nbackup saved at ' + backupPath + '\nrestart crabby for changes to take effect.';
 }, 'apply the pending proposed patch — only call after user explicitly approves');
 
 registry.register('self_reject', async function() {
@@ -143,13 +143,13 @@ registry.register('self_restore', async function(args) {
   fs.writeFileSync(fullPath, backup);
   fs.unlinkSync(backupPath);
 
-  return 'restored ' + file + ' from backup. restart kira for changes to take effect.';
+  return 'restored ' + file + ' from backup. restart crabby for changes to take effect.';
 }, 'restore a file from its backup after a bad patch');
 
 registry.register('self_list_allowed', async function() {
-  return 'files kira can propose changes to:\n' + ALLOWED.map(function(f) {
+  return 'files crabby can propose changes to:\n' + ALLOWED.map(function(f) {
     return (SENSITIVE.includes(f) ? '⚠ ' : '  ') + f;
   }).join('\n') + '\n\n⚠ = sensitive file, core behavior';
-}, 'list files kira is allowed to propose self-modifications to');
+}, 'list files crabby is allowed to propose self-modifications to');
 
 module.exports = {};

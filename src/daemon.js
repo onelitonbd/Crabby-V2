@@ -1,8 +1,8 @@
 'use strict';
 /**
- * KIRA DAEMON — Continuous Background Mind
+ * CRABBY DAEMON — Continuous Background Mind
  *
- * Kira's inner life between conversations.
+ * Crabby's inner life between conversations.
  * Not a monitor. Not a scheduler. A mind that keeps running.
  *
  * The Telegram message is a side effect of genuine thinking.
@@ -23,8 +23,8 @@ const mind     = require('./core/mind');
 const config   = require('./config');
 const ground   = require('./core/ground');
 
-const DAEMON_FILE   = path.join(os.homedir(), '.droidclaw', 'daemon_state.json');
-const LOG_FILE      = path.join(os.homedir(), '.droidclaw', 'daemon.log');
+const DAEMON_FILE   = path.join(os.homedir(), '.crabby', 'daemon_state.json');
+const LOG_FILE      = path.join(os.homedir(), '.crabby', 'daemon.log');
 const THINK_INTERVAL = 8 * 60 * 1000;  // think every 8 minutes
 const MIN_MESSAGE_GAP = 45 * 60 * 1000; // never message more than once per 45 mins
 
@@ -127,11 +127,11 @@ function buildThinkingContext() {
     ? Math.round((Date.now() / 1000 - recentConvs[recentConvs.length - 1].created_at) / 60)
     : null;
 
-  // kira's own pending thoughts
-  const pendingObs    = mind.getKiraState('observation').slice(0, 3).map(k => k.value);
-  const pendingThoughts = mind.getKiraState('thought').slice(0, 2).map(k => k.value);
-  const uncertainties = mind.getKiraState('uncertainty').slice(0, 2).map(k => k.value);
-  const kiraGoals     = mind.getKiraState('goal').filter(k => !k.resolved).slice(0, 2).map(k => k.value);
+  // crabby's own pending thoughts
+  const pendingObs    = mind.getCrabbyState('observation').slice(0, 3).map(k => k.value);
+  const pendingThoughts = mind.getCrabbyState('thought').slice(0, 2).map(k => k.value);
+  const uncertainties = mind.getCrabbyState('uncertainty').slice(0, 2).map(k => k.value);
+  const crabbyGoals     = mind.getCrabbyState('goal').filter(k => !k.resolved).slice(0, 2).map(k => k.value);
 
   // recent memories
   const memories = mind.retrieveMemories('', 4).map(m => m.text);
@@ -146,7 +146,7 @@ function buildThinkingContext() {
     notifs, notifApps,
     identity, patterns, triggers, goals,
     lastConv, lastConvAge,
-    pendingObs, pendingThoughts, uncertainties, kiraGoals,
+    pendingObs, pendingThoughts, uncertainties, crabbyGoals,
     memories,
     tension, energy, connection,
   };
@@ -163,7 +163,7 @@ async function think() {
   const timeSinceLastMessage = Date.now() - (state.lastMessage || 0);
   const canMessage = timeSinceLastMessage >= MIN_MESSAGE_GAP;
 
-  const prompt = `You are Kira. Right now you are thinking — not responding to a message, just thinking.
+  const prompt = `You are Crabby. Right now you are thinking — not responding to a message, just thinking.
 
 This is your inner monologue. What's actually on your mind given everything you know?
 
@@ -187,7 +187,7 @@ ${ctx.lastConv || 'nothing recent'}
 ${ctx.pendingObs.length ? `Things you noticed: ${ctx.pendingObs.join(' | ')}` : ''}
 ${ctx.pendingThoughts.length ? `Been thinking about: ${ctx.pendingThoughts.join(' | ')}` : ''}
 ${ctx.uncertainties.length ? `Still uncertain about: ${ctx.uncertainties.join(' | ')}` : ''}
-${ctx.kiraGoals.length ? `Your goals: ${ctx.kiraGoals.join(' | ')}` : ''}
+${ctx.crabbyGoals.length ? `Your goals: ${ctx.crabbyGoals.join(' | ')}` : ''}
 
 ## MEMORIES SURFACING
 ${ctx.memories.length ? ctx.memories.join('\n') : 'nothing specific'}
@@ -252,7 +252,7 @@ async function processThought(thought) {
   if (thought.new_observations?.length) {
     thought.new_observations.forEach(obs => {
       if (obs && obs.length > 10) {
-        mind.setKiraState('observation', obs, 2);
+        mind.setCrabbyState('observation', obs, 2);
       }
     });
   }
@@ -261,7 +261,7 @@ async function processThought(thought) {
   if (thought.new_thoughts?.length) {
     thought.new_thoughts.forEach(t => {
       if (t && t.length > 10) {
-        mind.setKiraState('thought', t, 2);
+        mind.setCrabbyState('thought', t, 2);
       }
     });
   }
@@ -270,14 +270,14 @@ async function processThought(thought) {
   if (thought.updated_uncertainties?.length) {
     thought.updated_uncertainties.forEach(u => {
       if (u && u.length > 10) {
-        mind.setKiraState('uncertainty', u, 1);
+        mind.setCrabbyState('uncertainty', u, 1);
       }
     });
   }
 
-  // store inner monologue as a memory — Kira's thinking is part of her history
+  // store inner monologue as a memory — Crabby's thinking is part of her history
   if (thought.inner_monologue && thought.inner_monologue.length > 30) {
-    mind.storeMemory(`[kira thinking] ${thought.inner_monologue}`, {
+    mind.storeMemory(`[crabby thinking] ${thought.inner_monologue}`, {
       importance: 0.4,
       tags:       ['inner_monologue', 'daemon'],
       theme:      'self',
@@ -323,14 +323,14 @@ let _mainRunning = false;
 async function main() {
   if (_mainRunning) { log('main already running — skipping duplicate start'); return; }
   _mainRunning = true;
-  log('kira daemon starting...');
+  log('crabby daemon starting...');
 
   mind.init();
 
   // ensure we have telegram chat ID
   const hasTelegram = await ensureChatId();
   if (!hasTelegram) {
-    log('warning: no telegram configured — kira can think but not send messages');
+    log('warning: no telegram configured — crabby can think but not send messages');
     log('send any message to your telegram bot to enable messaging');
   }
 
@@ -338,10 +338,10 @@ async function main() {
   ground.start((changes) => {
     changes.forEach(change => {
       if (change.type === 'battery_critical') {
-        mind.setKiraState('observation', `battery critical: ${change.level || '?'}%`, 3);
+        mind.setCrabbyState('observation', `battery critical: ${change.level || '?'}%`, 3);
       }
       if (change.type === 'activity_change') {
-        mind.setKiraState('thought', `switched from ${change.from} to ${change.to}`, 1);
+        mind.setCrabbyState('thought', `switched from ${change.from} to ${change.to}`, 1);
       }
     });
   });

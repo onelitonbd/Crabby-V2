@@ -6,7 +6,7 @@
  * Watches everything on the device passively.
  * Never waits to be asked.
  *
- * This is what separates Kira from every other AI:
+ * This is what separates Crabby from every other AI:
  * she observes your life even when you're not talking to her.
  *
  * After one week she knows things about you
@@ -17,9 +17,9 @@ const fs  = require('fs');
 const os  = require('os');
 const { spawnSync } = require('child_process');
 
-const GROUND_FILE   = os.homedir() + '/.droidclaw/ground_state.json';
-const HISTORY_FILE  = os.homedir() + '/.droidclaw/ground_history.json';
-const KIRA_BASE     = 'http://localhost:7070';
+const GROUND_FILE   = os.homedir() + '/.crabby/ground_state.json';
+const HISTORY_FILE  = os.homedir() + '/.crabby/ground_history.json';
+const CRABBY_BASE     = 'http://localhost:7070';
 const POLL_INTERVAL = 60 * 1000; // 60 seconds
 const MAX_HISTORY   = 500;       // keep last 500 snapshots (~8 hours at 60s intervals)
 
@@ -30,7 +30,7 @@ let _onUpdate = null; // callback when significant change detected
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 function _get(endpoint) {
   try {
-    const result = spawnSync('curl', ['-s', '-m', '5', `${KIRA_BASE}${endpoint}`], {
+    const result = spawnSync('curl', ['-s', '-m', '5', `${CRABBY_BASE}${endpoint}`], {
       encoding: 'utf8', timeout: 6000
     });
     if (result.error || result.status !== 0) return null;
@@ -42,7 +42,7 @@ function _post(endpoint, body) {
   try {
     const result = spawnSync('curl', [
       '-s', '-m', '5', '-X', 'POST',
-      `${KIRA_BASE}${endpoint}`,
+      `${CRABBY_BASE}${endpoint}`,
       '-H', 'Content-Type: application/json',
       '-d', JSON.stringify(body)
     ], { encoding: 'utf8', timeout: 6000 });

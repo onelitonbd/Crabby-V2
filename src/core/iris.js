@@ -13,10 +13,10 @@
 const fs = require('fs');
 const os = require('os');
 
-const IRIS_FILE = os.homedir() + '/.droidclaw/iris_patterns.json';
+const IRIS_FILE = os.homedir() + '/.crabby/iris_patterns.json';
 
 // ─── Response Profiles ────────────────────────────────────────────────────────
-// Each profile defines how Kira should respond
+// Each profile defines how Crabby should respond
 const PROFILES = {
 
   REFLEX: {

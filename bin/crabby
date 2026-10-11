@@ -5,28 +5,28 @@ const fs   = require('fs');
 const path = require('path');
 const os   = require('os');
 
-const DROIDCLAW = path.join(os.homedir(), 'droidclaw');
-const DOT_DIR   = path.join(os.homedir(), '.droidclaw');
+const CRABBY = path.join(os.homedir(), 'crabby');
+const DOT_DIR   = path.join(os.homedir(), '.crabby');
 const PID_FILE  = path.join(DOT_DIR, 'daemon.pid');
 const LOCK_FILE = path.join(DOT_DIR, 'daemon.lock');
 const LOG_FILE  = path.join(DOT_DIR, 'daemon.log');
-const DAEMON    = path.join(DROIDCLAW, 'src', 'daemon.js');
-const INDEX     = path.join(DROIDCLAW, 'src', 'index.js');
+const DAEMON    = path.join(CRABBY, 'src', 'daemon.js');
+const INDEX     = path.join(CRABBY, 'src', 'index.js');
 
 const HELP = `
-kira — personal AI agent for Android/Termux
+crabby — personal AI agent for Android/Termux
 
-usage:  kira [command]
+usage:  crabby [command]
 
 commands:
-  kira         start Kira (default)
-  kira status  show daemon status
-  kira logs [n] view last n daemon log lines (default: 30)
-  kira stop    stop the background daemon
+  crabby         start Crabby (default)
+  crabby status  show daemon status
+  crabby logs [n] view last n daemon log lines (default: 30)
+  crabby stop    stop the background daemon
 
 environment:
   TERMUX_API_PACKAGE   package name for Termux:API (default: com.termux.api)
-  KIRA_CONFIG_PATH     override config directory (default: ~/.droidclaw)
+  CRABBY_CONFIG_PATH   override config directory (default: ~/.crabby)
 `.trim();
 
 if (!fs.existsSync(DOT_DIR)) fs.mkdirSync(DOT_DIR, { recursive: true });
@@ -71,7 +71,7 @@ function ensureDaemon() {
   const child = spawn(process.execPath, [DAEMON], {
     detached: true,
     stdio:    ['ignore', log, log],
-    cwd:      DROIDCLAW,
+    cwd:      CRABBY,
   });
   child.unref();
   try { fs.writeFileSync(PID_FILE, String(child.pid)); } catch {}
@@ -98,19 +98,19 @@ function showStatus() {
       lines.slice(-5).forEach(l => console.log(' ', l));
     } catch {}
   } else {
-    console.log('daemon: not running — start with: kira');
+    console.log('daemon: not running — start with: crabby');
   }
 }
 
 function launchUI() {
   if (!fs.existsSync(INDEX)) {
-    console.error('Kira not found at ' + DROIDCLAW);
-    console.error('Run: cd ~/droidclaw && bash install.sh');
+    console.error('Crabby not found at ' + CRABBY);
+    console.error('Run: cd ~/crabby && bash install.sh');
     process.exit(1);
   }
   const child = spawnSync(process.execPath, [INDEX, ...args], {
     stdio: 'inherit',
-    cwd:   DROIDCLAW,
+    cwd:   CRABBY,
   });
   process.exit(child.status || 0);
 }

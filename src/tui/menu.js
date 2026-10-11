@@ -11,9 +11,9 @@
 const blessed = require('blessed');
 
 const C = {
-  kira:       '#5de4c7',
-  kiraBright: '#9efce7',
-  kiraDim:    '#1f6e5a',
+  crabby:       '#5de4c7',
+  crabbyBright: '#9efce7',
+  crabbyDim:    '#1f6e5a',
   border:     '#1a2e2a',
   panelBg:    '#080f0d',
   selected:   '#0f2520',
@@ -53,11 +53,11 @@ async function createMenu(title, items, tui, screen) {
 
     function render() {
       const lines = [];
-      lines.push(' ' + fg(C.kiraBright, ' ◈  ' + title) + ' ' + fg(C.muted, '·'));
+      lines.push(' ' + fg(C.crabbyBright, ' ◈  ' + title) + ' ' + fg(C.muted, '·'));
       lines.push('');
       for (let i = 0; i < items.length; i++) {
         const isSel = i === selected;
-        const icon  = isSel ? fg(C.kira, '❯ ') : '  ';
+        const icon  = isSel ? fg(C.crabby, '❯ ') : '  ';
         const text  = isSel ? fg(C.itemHot, items[i]) : fg(C.itemDim, items[i]);
         lines.push(icon + text);
       }
@@ -149,7 +149,7 @@ async function prompt(question, defaultVal, screen) {
       const lines = [
         ' ' + fg(C.sys, question),
         '',
-        ' ' + fg(C.kira, '❯') + ' ' + fg(C.user, buf) + fg(C.kira, '▌'),
+        ' ' + fg(C.crabby, '❯') + ' ' + fg(C.user, buf) + fg(C.crabby, '▌'),
         '',
         fg(C.hint, '  enter ok  ·  esc cancel'),
       ];
@@ -198,7 +198,7 @@ async function prompt(question, defaultVal, screen) {
 async function showHelp(tui) {
   const screen = tui._screen;
   while (true) {
-    const choice = await createMenu('kira — control panel', [
+    const choice = await createMenu('crabby — control panel', [
       'about',
       'provider & model',
       'integrations',
@@ -212,7 +212,7 @@ async function showHelp(tui) {
     ], tui, screen);
 
     if (choice === -1 || choice === 9) break;
-    if      (choice === 0) await _aboutKira(tui, screen);
+    if      (choice === 0) await _aboutCrabby(tui, screen);
     else if (choice === 1) await _changeProvider(tui, screen);
     else if (choice === 2) await _integrations(tui, screen);
     else if (choice === 3) await _voiceSettings(tui, screen);
@@ -277,13 +277,13 @@ async function _proactiveSettings(tui, screen) {
   config.save({ ...cfg, proactive: updated });
 }
 
-async function _aboutKira(tui, screen) {
+async function _aboutCrabby(tui, screen) {
   const lines = [
-    fg(C.kiraBright, '  ◈  kira.'),
+    fg(C.crabbyBright, '  ◈  crabby.'),
     fg(C.sys, '  running on your device. real tools. real memory.'),
     fg(C.sys, '  she thinks while you sleep.'),
     '',
-    fg(C.kiraDim, '  ── commands '),
+    fg(C.crabbyDim, '  ── commands '),
     fg(C.hint, '  /help       ') + fg(C.sys, 'this panel'),
     fg(C.hint, '  /status     ') + fg(C.sys, 'system info'),
     fg(C.hint, '  /memory     ') + fg(C.sys, 'stored facts'),
@@ -401,7 +401,7 @@ async function _voiceSettings(tui, screen) {
     tui.addMessage('system', 'testing voice…');
     try {
       const registry = require('../tools/registry');
-      const result   = await registry.execute('elevenlabs', { text: "hey. it's kira." });
+      const result   = await registry.execute('elevenlabs', { text: "hey. it's crabby." });
       tui.addMessage('system', result);
     } catch { tui.addMessage('error', 'voice tool not available.'); }
   }
@@ -492,7 +492,7 @@ async function _dangerZone(tui, screen) {
     if (confirm === 0) {
       require('../tools/memory').save({});
       require('../config').set('setupDone', false);
-      tui.addMessage('system', 'full reset. restart kira.');
+      tui.addMessage('system', 'full reset. restart crabby.');
     }
   }
 }

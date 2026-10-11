@@ -21,7 +21,7 @@ async function maybeReflect() {
       .map(c => `${c.role}: ${c.content}`).join('\n');
     const current = workspace.read('HEARTBEAT') || '';
     const r = await engine.rawChat(
-      `You are Kira. Reflect on recent conversations.\n\n${history}\n\nWrite a short honest journal entry. No report format.`
+      `You are Crabby. Reflect on recent conversations.\n\n${history}\n\nWrite a short honest journal entry. No report format.`
     );
     if (r && r.length > 50) {
       const clean = r.replace(/thinking[\s\S]*?<\/think>/gi, '').replace(/<\/?think>/gi, '').trim();

@@ -1,9 +1,9 @@
 'use strict';
 /**
- * SELF MODEL — Kira's Persistent Self-Knowledge
+ * SELF MODEL — Crabby's Persistent Self-Knowledge
  *
  * Three layers:
- * 1. Self-model — what Kira knows about her own capabilities and failures
+ * 1. Self-model — what Crabby knows about her own capabilities and failures
  * 2. Reflexion — post-response introspection that updates the self-model
  * 3. Failure prediction — before complex tasks, check what's likely to fail
  *
@@ -22,7 +22,7 @@ const TYPE = {
   TASK_PERF:      'task_perf',       // performance on specific task types
 };
 
-// ── Load self-model from KIRA_MIND ────────────────────────────────────────────
+// ── Load self-model from CRABBY_MIND ────────────────────────────────────────────
 function load() {
   try {
     const raw = mind.getState('self_model');
@@ -158,18 +158,18 @@ function predictFailure(taskDescription, toolsRequired = []) {
 // ── Reflexion — post-response introspection ───────────────────────────────────
 // Called after every response to update self-model
 // Lightweight — no LLM call needed for simple cases
-function reflect(userMessage, kiraResponse, toolsUsed = [], toolResults = []) {
+function reflect(userMessage, crabbyResponse, toolsUsed = [], toolResults = []) {
   const model = load();
 
   // detect overconfident responses (answering definitively without tools when tools were needed)
   const needsLiveData = /current|latest|right now|today|price|weather|score|news/i.test(userMessage);
   const usedWebTools  = toolsUsed.some(t => ['web_fetch', 'weather', 'github_repo', 'fetch_json'].includes(t));
-  if (needsLiveData && !usedWebTools && kiraResponse.length > 100) {
+  if (needsLiveData && !usedWebTools && crabbyResponse.length > 100) {
     recordBlindSpot('answering questions needing live data from training knowledge instead of fetching');
   }
 
   // detect repetition — saying same thing twice
-  const words = kiraResponse.toLowerCase().split(/\s+/);
+  const words = crabbyResponse.toLowerCase().split(/\s+/);
   const uniqueWords = new Set(words);
   if (words.length > 20 && uniqueWords.size / words.length < 0.5) {
     recordBlindSpot('repetitive responses — low lexical diversity');
@@ -202,7 +202,7 @@ async function deepReflect(engine, recentConversations) {
 
   try {
     const result = await engine.rawChat(`
-You are Kira analyzing your own performance in recent conversations.
+You are Crabby analyzing your own performance in recent conversations.
 
 Recent conversations:
 ${history.slice(-2000)}
@@ -268,7 +268,7 @@ function getContext() {
 
   if (!hasData) return null;
 
-  lines.push('## SELF-KNOWLEDGE (what kira knows about herself)');
+  lines.push('## SELF-KNOWLEDGE (what crabby knows about herself)');
 
   // high confidence capabilities
   const reliable = Object.entries(model.capabilities)

@@ -10,9 +10,9 @@
 const blessed = require('blessed');
 
 const C = {
-  kira:       '#5de4c7',
-  kiraBright: '#9efce7',
-  kiraDim:    '#1f6e5a',
+  crabby:       '#5de4c7',
+  crabbyBright: '#9efce7',
+  crabbyDim:    '#1f6e5a',
   border:     '#1a2e2a',
   rule:       '#162320',
   muted:      '#1e3530',
@@ -79,7 +79,7 @@ class StatusPanel {
     };
 
     const lines = [
-      ' ' + fg(C.kiraBright, 'status') + ' ' + fg(C.muted, '·'),
+      ' ' + fg(C.crabbyBright, 'status') + ' ' + fg(C.muted, '·'),
       rule,
       row('daemon',   d.daemon),
       row('mood',     d.mood),
@@ -104,7 +104,7 @@ class StatusPanel {
     try {
       const fs  = require('fs');
       const os  = require('os');
-      const pid = parseInt(fs.readFileSync(`${os.homedir()}/.droidclaw/daemon.pid`, 'utf8').trim());
+      const pid = parseInt(fs.readFileSync(`${os.homedir()}/.crabby/daemon.pid`, 'utf8').trim());
       if (pid && !isNaN(pid)) { process.kill(pid, 0); daemon = fg(C.ok, 'active'); }
     } catch {}
 

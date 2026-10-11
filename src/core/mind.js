@@ -1,6 +1,6 @@
 'use strict';
 /**
- * KIRA_MIND — Unified Intelligence Database
+ * CRABBY_MIND — Unified Intelligence Database
  *
  * Pure JavaScript. No native modules. Works on Termux.
  * Same API as the SQLite version — everything else stays identical.
@@ -13,14 +13,14 @@ const fs   = require('fs');
 const path = require('path');
 const os   = require('os');
 
-const DIR = path.join(os.homedir(), '.droidclaw');
+const DIR = path.join(os.homedir(), '.crabby');
 
 const FILES = {
   person:        path.join(DIR, 'mind_person.json'),
   memories:      path.join(DIR, 'mind_memories.json'),
   state:         path.join(DIR, 'mind_state.json'),
   tasks:         path.join(DIR, 'mind_tasks.json'),
-  kira:          path.join(DIR, 'mind_kira.json'),
+  crabby:          path.join(DIR, 'mind_crabby.json'),
   conversations: path.join(DIR, 'mind_conversations.json'),
   routing:       path.join(DIR, 'mind_routing.json'),
 };
@@ -35,7 +35,7 @@ function _defaults(table) {
     case 'memories':      return [];
     case 'state':         return {};
     case 'tasks':         return [];
-    case 'kira':          return [];
+    case 'crabby':          return [];
     case 'conversations': return [];
     case 'routing':       return {
       REFLEX:   { profile: 'REFLEX',   success_rate: 1.0, uses: 0, wins: 0 },
@@ -245,28 +245,28 @@ function getRecentTasks(limit = 5) {
   return _load('tasks').sort((a, b) => b.updated_at - a.updated_at).slice(0, limit);
 }
 
-// ── KIRA SELF ─────────────────────────────────────────────────────────────────
+// ── CRABBY SELF ─────────────────────────────────────────────────────────────────
 let _kid = 1;
-function setKiraState(type, value, priority = 1) {
-  const kira = _load('kira');
-  kira.push({ id: _kid++, type, value, priority, resolved: false, created_at: Math.floor(Date.now() / 1000), updated_at: Math.floor(Date.now() / 1000) });
-  const ofType = kira.filter(k => k.type === type);
-  if (ofType.length > 20) { const oldest = ofType[0].id; const idx = kira.findIndex(k => k.id === oldest); if (idx !== -1) kira.splice(idx, 1); }
-  _markDirty('kira');
+function setCrabbyState(type, value, priority = 1) {
+  const crabby = _load('crabby');
+  crabby.push({ id: _kid++, type, value, priority, resolved: false, created_at: Math.floor(Date.now() / 1000), updated_at: Math.floor(Date.now() / 1000) });
+  const ofType = crabby.filter(k => k.type === type);
+  if (ofType.length > 20) { const oldest = ofType[0].id; const idx = crabby.findIndex(k => k.id === oldest); if (idx !== -1) crabby.splice(idx, 1); }
+  _markDirty('crabby');
 }
-function getKiraState(type = null, includeResolved = false) {
-  const kira = _load('kira').filter(k => includeResolved || !k.resolved);
-  if (type) return kira.filter(k => k.type === type).sort((a, b) => b.priority - a.priority);
-  return kira.sort((a, b) => b.priority - a.priority);
+function getCrabbyState(type = null, includeResolved = false) {
+  const crabby = _load('crabby').filter(k => includeResolved || !k.resolved);
+  if (type) return crabby.filter(k => k.type === type).sort((a, b) => b.priority - a.priority);
+  return crabby.sort((a, b) => b.priority - a.priority);
 }
-function resolveKira(id) {
-  const k = _load('kira').find(x => x.id === id);
+function resolveCrabby(id) {
+  const k = _load('crabby').find(x => x.id === id);
   if (k) { k.resolved = true; k.updated_at = Math.floor(Date.now() / 1000); }
-  _markDirty('kira');
+  _markDirty('crabby');
 }
-function setMood(mood) { setKiraState('mood', mood, 1); }
+function setMood(mood) { setCrabbyState('mood', mood, 1); }
 function getMood() {
-  const moods = _load('kira').filter(k => k.type === 'mood').sort((a, b) => b.created_at - a.created_at);
+  const moods = _load('crabby').filter(k => k.type === 'mood').sort((a, b) => b.created_at - a.created_at);
   return moods[0]?.value || 'neutral';
 }
 
@@ -413,7 +413,7 @@ module.exports = {
   upsertBelief, contradictBelief, getBeliefs,
   storeMemory, retrieveMemories, decayMemories,
   createTask, updateTask, getActiveTask, getRecentTasks,
-  setKiraState, getKiraState, resolveKira, setMood, getMood,
+  setCrabbyState, getCrabbyState, resolveCrabby, setMood, getMood,
   logConversation, getConversationHistory, getRecentConversations,
   updateRoutingWeight, getRoutingWeights,
   search, stats, migrateFromJSON,

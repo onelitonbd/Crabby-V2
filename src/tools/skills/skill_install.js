@@ -3,7 +3,7 @@ const fs   = require('fs');
 const path = require('path');
 const os   = require('os');
 
-const USER_SKILLS_DIR = path.join(os.homedir(), '.droidclaw', 'skills');
+const USER_SKILLS_DIR = path.join(os.homedir(), '.crabby', 'skills');
 
 if (!fs.existsSync(USER_SKILLS_DIR)) {
   fs.mkdirSync(USER_SKILLS_DIR, { recursive: true });

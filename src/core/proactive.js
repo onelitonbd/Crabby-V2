@@ -2,7 +2,7 @@
 /**
  * PROACTIVE — Real proactive intelligence
  *
- * Reads from KIRA_MIND. Speaks up when something matters.
+ * Reads from CRABBY_MIND. Speaks up when something matters.
  * Not on a schedule. When the data says something is worth saying.
  */
 
@@ -22,12 +22,12 @@ async function _check() {
   if (!_tui || !_shouldSpeak()) return;
 
   try {
-    // check high priority kira observations
-    const obs = mind.getKiraState('observation').filter(k => k.priority >= 3);
+    // check high priority crabby observations
+    const obs = mind.getCrabbyState('observation').filter(k => k.priority >= 3);
     if (obs.length) {
       _lastSpoke = Date.now();
       _tui.addMessage('agent', obs[0].value);
-      mind.resolveKira(obs[0].id);
+      mind.resolveCrabby(obs[0].id);
       return;
     }
 
@@ -54,23 +54,23 @@ async function _check() {
 function start(deps) {
   _tui = deps.tui || null;
 
-  // initialize kira's default goals if empty
-  const goals = mind.getKiraState('goal');
+  // initialize crabby's default goals if empty
+  const goals = mind.getCrabbyState('goal');
   if (!goals.length) {
-    mind.setKiraState('goal', 'understand why this person builds things', 1);
-    mind.setKiraState('goal', 'learn their frustration patterns before they happen', 2);
-    mind.setKiraState('goal', 'figure out what they need before they ask', 2);
+    mind.setCrabbyState('goal', 'understand why this person builds things', 1);
+    mind.setCrabbyState('goal', 'learn their frustration patterns before they happen', 2);
+    mind.setCrabbyState('goal', 'figure out what they need before they ask', 2);
   }
 
   // start ground observer
   ground.start((changes, curr) => {
-    // high urgency changes go to kira observations
+    // high urgency changes go to crabby observations
     changes.forEach(change => {
       if (change.type === 'battery_critical') {
-        mind.setKiraState('observation', `battery critical at ${curr.battery}%`, 3);
+        mind.setCrabbyState('observation', `battery critical at ${curr.battery}%`, 3);
       }
       if (change.type === 'activity_change' && change.from === 'coding' && change.to === 'social') {
-        mind.setKiraState('thought', `switched from coding to social at ${new Date().toLocaleTimeString()}`, 1);
+        mind.setCrabbyState('thought', `switched from coding to social at ${new Date().toLocaleTimeString()}`, 1);
       }
     });
   });

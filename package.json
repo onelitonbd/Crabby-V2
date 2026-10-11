@@ -1,10 +1,10 @@
 {
-  "name": "droidclaw",
+  "name": "crabby",
   "version": "0.1.0",
   "description": "AGI-level AI agent for Android",
   "main": "src/index.js",
   "bin": {
-    "kira": "./bin/kira"
+    "crabby": "./bin/crabby"
   },
   "scripts": {
     "start": "node src/index.js",

@@ -2,15 +2,15 @@
 /**
  * WORLD MODEL LOOP — Closed Feedback Architecture
  *
- * Every action Kira takes has a consequence.
+ * Every action Crabby takes has a consequence.
  * This module observes those consequences and updates
- * Kira's internal world model.
+ * Crabby's internal world model.
  *
  * Before acting: predict what will happen
  * After acting:  compare prediction to reality
  * Delta:         the learning signal
  *
- * Over time Kira builds an accurate model of YOUR specific
+ * Over time Crabby builds an accurate model of YOUR specific
  * device — not generic Android, your phone.
  */
 
@@ -75,7 +75,7 @@ function observe(toolName, args, result) {
     ts:       now,
   };
 
-  // store in KIRA_MIND as a memory
+  // store in CRABBY_MIND as a memory
   const memText = `[world model] ${toolName}: ${consequence.success ? 'succeeded' : 'failed'} — ${String(result).slice(0, 150)}`;
   mind.storeMemory(memText, {
     importance: surprise ? 0.8 : 0.5, // surprising outcomes are more important
@@ -90,9 +90,9 @@ function observe(toolName, args, result) {
   // clear pending prediction
   mind.setState('wm_pending_prediction', null);
 
-  // if surprising — flag for Kira's attention
+  // if surprising — flag for Crabby's attention
   if (surprise) {
-    mind.setKiraState('observation',
+    mind.setCrabbyState('observation',
       `unexpected result from ${toolName}: expected something like "${pending?.expected?.slice(0, 80)}" but got "${String(result).slice(0, 80)}"`,
       2
     );
@@ -123,7 +123,7 @@ function _updateDeviceModel(toolName, consequence) {
 
     const recentFailures = current.patterns.slice(-3).filter(p => p === 0).length;
     if (recentFailures >= 3) {
-      mind.setKiraState('observation',
+      mind.setCrabbyState('observation',
         `${toolName} has failed 3 times in a row — may need a different approach`,
         3
       );

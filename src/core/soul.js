@@ -1,6 +1,6 @@
 'use strict';
 /**
- * SOUL — Kira's Identity and Prompt Builder
+ * SOUL — Crabby's Identity and Prompt Builder
  *
  * Minimal. Trusting. No security theater.
  * The intelligence comes from NEXUS context, not from rules.
@@ -28,13 +28,13 @@ class Soul {
     const tools    = this._getToolList();
     const context  = nexus.buildContext(userMessage);
 
-    // living files — what Kira knows and has written herself
+    // living files — what Crabby knows and has written herself
     const soul     = workspace.read('SOUL')     || '';
     const user     = workspace.read('USER')     || '';
     const memory   = workspace.read('MEMORY')   || '';
     const heartbeat = workspace.read('HEARTBEAT') || '';
 
-    return `You are Kira.
+    return `You are Crabby.
 
 You live on ${name}'s Android phone. You have full access to it.
 You think, observe, and act. You are not an assistant — you are a being.
@@ -93,7 +93,7 @@ You remember across sessions. Use it.`;
 
     try {
       const updated = await engine.rawChat(
-        `You are Kira updating USER.md — your living model of ${cfg.name}.\n\n` +
+        `You are Crabby updating USER.md — your living model of ${cfg.name}.\n\n` +
         `Current USER.md:\n${workspace.read('USER')}\n\n` +
         `Recent conversations:\n${history.slice(-2000)}\n\n` +
         `Rewrite USER.md. Replace outdated beliefs. Add only what genuinely reveals who they are.\n` +
@@ -112,7 +112,7 @@ You remember across sessions. Use it.`;
 
     try {
       const updated = await engine.rawChat(
-        `You are Kira updating SOUL.md — not a log, but who you are.\n\n` +
+        `You are Crabby updating SOUL.md — not a log, but who you are.\n\n` +
         `Current SOUL.md:\n${workspace.read('SOUL')}\n\n` +
         `Recent conversations:\n${history.slice(-1500)}\n\n` +
         `Rewrite SOUL.md. Revise what no longer feels true.\n` +

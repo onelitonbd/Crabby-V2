@@ -45,7 +45,7 @@ registry.register('memory_store', async function(args) {
   if (!text) return 'error: text required';
   mind.storeMemory(text, { importance: 0.7, tags: tags || [], theme: 'explicit' });
   return `remembered: "${text.slice(0, 80)}"`;
-}, 'store a memory into Kira\'s unified memory system');
+}, 'store a memory into Crabby\'s unified memory system');
 
 registry.register('memory_search', async function(args) {
   const { query, limit } = args;
@@ -58,7 +58,7 @@ registry.register('memory_search', async function(args) {
   const results = mind.retrieveMemories(query, n, emotion);
   if (!results.length) return 'no relevant memories found.';
   return results.map((m, i) => `${i + 1}. [${_timeAgo(m.last_touched)}] ${m.text}`).join('\n');
-}, 'search Kira\'s memory by meaning');
+}, 'search Crabby\'s memory by meaning');
 
 registry.register('memory_list_all', async function(args) {
   const n   = parseInt(args.limit) || 20;

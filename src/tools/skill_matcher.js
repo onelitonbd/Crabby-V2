@@ -15,8 +15,8 @@ const os      = require('os');
 const registry = require('../tools/registry');
 
 const SKILLS_DIR      = path.join(__dirname, '..', 'tools', 'skills');
-const USER_SKILLS_DIR = path.join(os.homedir(), '.droidclaw', 'skills');
-const PERF_FILE       = path.join(os.homedir(), '.droidclaw', 'skill_performance.json');
+const USER_SKILLS_DIR = path.join(os.homedir(), '.crabby', 'skills');
+const PERF_FILE       = path.join(os.homedir(), '.crabby', 'skill_performance.json');
 
 // ── Performance tracking ──────────────────────────────────────────────────────
 function loadPerf() {
@@ -241,7 +241,7 @@ Rules:
         // track in MIND
         try {
           const mind = require('../core/mind');
-          mind.setKiraState('observation', `auto-created skill: ${skill.name} — ${skill.description}`, 2);
+          mind.setCrabbyState('observation', `auto-created skill: ${skill.name} — ${skill.description}`, 2);
         } catch {}
       }
     });
