@@ -1,0 +1,28 @@
+# Temporary probe: checks which public static hosts serve the game as real HTML.
+# Manual dispatch only; deleted once a host is verified.
+name: probe static hosts
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe candidate hosts
+        run: |
+          set +e
+          REF="arena/b489e0b2-crabby-v2"
+          check () {
+            u="$1"
+            code=$(curl -s -o /tmp/body -w '%{http_code}' -L --max-time 25 "$u")
+            ctype=$(curl -s -o /dev/null -D /tmp/hdr -L --max-time 25 "$u"; grep -i '^content-type' /tmp/hdr | tail -1 | tr -d '\r' | cut -c1-60)
+            bytes=$(wc -c < /tmp/body | tr -d ' ')
+            game=$(grep -c 'CRABBY' /tmp/body)
+            echo "::notice title=PROBE::URL=$u | status=$code | $ctype | bytes=$bytes | hasGameMarkup=$game"
+          }
+          check "https://cdn.jsdelivr.net/gh/onelitonbd/Crabby-V2@${REF}/games/crabby-catch.html"
+          check "https://raw.githack.com/onelitonbd/Crabby-V2/${REF}/games/crabby-catch.html"
+          check "https://cdn.statically.io/gh/onelitonbd/Crabby-V2/${REF}/games/crabby-catch.html"
+          check "https://onelitonbd.github.io/Crabby-V2/games/crabby-catch.html"
