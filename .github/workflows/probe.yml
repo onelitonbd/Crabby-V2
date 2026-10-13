@@ -1,7 +1,11 @@
 # Temporary probe: checks which public static hosts serve the game as real HTML.
 # Manual dispatch only; deleted once a host is verified.
 name: probe static hosts
-on: workflow_dispatch
+on:
+  push:
+    paths:
+      - '.github/workflows/probe.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
